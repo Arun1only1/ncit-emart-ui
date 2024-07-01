@@ -1,5 +1,5 @@
 import { Formik } from "formik";
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -18,11 +18,32 @@ import { productCategories } from "../constants/general.constant";
 import Header from "../component/Header";
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../lib/axios.instance";
-import { useNavigate } from "react-router-dom";
+import { Form, useNavigate } from "react-router-dom";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { styled } from "@mui/material/styles";
+import axios from "axios";
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 const AddProduct = () => {
+  const [image, setImage] = useState(null);
+  const [localUrl, setLocalUrl] = useState("");
+  const [imageUploadLoading, setImageUploadLoading] = useState(false);
+
+  // navigate
   const navigate = useNavigate();
 
+  // add product
   const { isPending, mutate } = useMutation({
     mutationKey: ["add-product"],
     mutationFn: async (values) => {
@@ -36,12 +57,12 @@ const AddProduct = () => {
     },
   });
 
-  if (isPending) {
+  if (isPending || imageUploadLoading) {
     return <CircularProgress />;
   }
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: "7rem" }}>
+    <Box sx={{ display: "flex", flexDirection: "column" }}>
       <Header />
       <Formik
         initialValues={{
@@ -54,7 +75,34 @@ const AddProduct = () => {
           hasFreeShipping: false,
         }}
         validationSchema={productSchema}
-        onSubmit={(values) => {
+        onSubmit={async (values) => {
+          if (image) {
+            const cloudName = "dlkcko4n6";
+            const upload_preset = "ncit-preset";
+
+            const formData = new FormData();
+
+            formData.append("cloud_name", cloudName);
+            formData.append("file", image);
+            formData.append("upload_preset", upload_preset);
+
+            try {
+              setImageUploadLoading(true);
+              const res = await axios.post(
+                `https://api.cloudinary.com/v1_1/${cloudName}/upload`,
+                formData
+              );
+
+              setImageUploadLoading(false);
+
+              const imageUrl = res?.data?.secure_url;
+              values.image = imageUrl;
+            } catch (error) {
+              setImageUploadLoading(false);
+
+              console.log("File upload failed");
+            }
+          }
           mutate(values);
         }}
       >
@@ -63,6 +111,7 @@ const AddProduct = () => {
             <form
               onSubmit={formik.handleSubmit}
               style={{
+                margin: "7rem 0 4rem",
                 display: "flex",
                 flexDirection: "column",
                 gap: "2rem",
@@ -75,6 +124,35 @@ const AddProduct = () => {
             >
               <Typography variant="h4">Add Product</Typography>
 
+              {localUrl && (
+                <img
+                  src={localUrl}
+                  alt=""
+                  height="250px"
+                  width="100%"
+                  style={{ objectFit: "cover" }}
+                />
+              )}
+
+              <FormControl>
+                <Button
+                  component="label"
+                  role={undefined}
+                  variant="contained"
+                  tabIndex={-1}
+                  startIcon={<CloudUploadIcon />}
+                >
+                  Upload file
+                  <VisuallyHiddenInput
+                    type="file"
+                    onChange={(event) => {
+                      const file = event?.target?.files[0];
+                      setImage(file);
+                      setLocalUrl(URL.createObjectURL(file));
+                    }}
+                  />
+                </Button>
+              </FormControl>
               <FormControl fullWidth>
                 <TextField
                   required

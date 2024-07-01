@@ -89,6 +89,10 @@ const Header = (props) => {
           >
             Electronic Mart
           </Typography>
+
+          <Typography variant="h6">
+            Hello {localStorage.getItem("firstName")}
+          </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {navItems.map((item) => (
               <Button

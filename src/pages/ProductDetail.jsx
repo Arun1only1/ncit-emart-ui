@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Checkbox,
   Chip,
   CircularProgress,
   Stack,
@@ -10,11 +11,13 @@ import React from "react";
 import Header from "../component/Header";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "../lib/axios.instance";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { fallbackImage } from "../constants/general.constant";
+import DeleteProductDialog from "../component/DeleteProductDialog";
 
 const ProductDetail = () => {
   const params = useParams();
+  const navigate = useNavigate();
 
   const { isPending, data } = useQuery({
     queryKey: ["product-detail"],
@@ -33,31 +36,43 @@ const ProductDetail = () => {
       <Header />
 
       <Stack
-        direction="row"
         sx={{
-          marginTop: "5rem",
+          flexDirection: {
+            xs: "column",
+            md: "row",
+          },
+          marginTop: {
+            xs: "4rem",
+            md: "5rem",
+          },
+
           maxHeight: "1000px",
-          width: "80vw",
+          width: {
+            xs: "100%",
+            md: "80vw",
+          },
           gap: "1rem",
           padding: "1rem",
-          boxShadow: "rgba(0, 0, 0, 0.56) 0px 22px 70px 4px",
+          boxShadow: { md: "rgba(0, 0, 0, 0.56) 0px 22px 70px 4px", xs: null },
         }}
       >
-        <Box sx={{ width: "60%" }}>
+        <Box sx={{ width: { xs: "100%", md: "60%" } }}>
           <img
             src={productDetail?.image || fallbackImage}
             alt={productDetail?.name}
-            style={{ width: "90%", height: "100%" }}
+            style={{ width: "100%", height: "100%" }}
           />
         </Box>
         <Box
           sx={{
-            width: "40%",
+            width: { xs: "100%", md: "40%" },
+
             display: "flex",
             flexDirection: "column",
             gap: "1.5rem",
             justifyContent: "center",
             alignItems: "flex-start",
+            mb: "5rem",
           }}
         >
           <Typography variant="h5">{productDetail?.name}</Typography>
@@ -78,21 +93,35 @@ const ProductDetail = () => {
             {productDetail?.description}
           </Typography>
 
+          <Typography variant="h6">
+            Free shipping: <Checkbox checked={productDetail?.hasFreeShipping} />
+          </Typography>
+
           <Stack
-            direction="row"
             spacing={4}
             sx={{
-              width: "100%",
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              width: "90%",
+              gap: "10px",
+
               justifyContent: "center",
               alignItems: "center",
+              mb: "1rem",
             }}
           >
-            <Button variant="contained" color="success" fullWidth>
+            <Button
+              variant="contained"
+              color="success"
+              fullWidth
+              onClick={() => {
+                navigate(`/edit-product/${params.id}`);
+              }}
+            >
               edit
             </Button>
-            <Button variant="contained" color="error" fullWidth>
-              delete
-            </Button>
+
+            <DeleteProductDialog />
           </Stack>
         </Box>
       </Stack>

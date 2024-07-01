@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 const ProductCard = (props) => {
   const navigate = useNavigate();
   return (
-    <Card sx={{ width: 450 }}>
+    <Card sx={{ width: { xs: "95%", sm: "80%", md: "450px" } }}>
       <CardMedia
         sx={{ height: 300, objectFit: "contain", cursor: "pointer" }}
         image={props.image || fallbackImage}
@@ -24,11 +24,16 @@ const ProductCard = (props) => {
       />
       <CardContent>
         <Stack
-          direction="row"
+          sx={{
+            flexDirection: {
+              xs: "column",
+              sm: "row",
+            },
+          }}
           alignItems="center"
           justifyContent="space-between"
         >
-          <Typography gutterBottom variant="h5" component="div">
+          <Typography gutterBottom variant="h6" component="div">
             {props.name}
           </Typography>
 

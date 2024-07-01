@@ -26,7 +26,7 @@ const router = createBrowserRouter([
     element: <AddProduct />,
   },
   { path: "/product-detail/:id", element: <ProductDetail /> },
-  { path: "/edit-product", element: <EditProduct /> },
+  { path: "/edit-product/:id", element: <EditProduct /> },
 ]);
 
 // Create a client

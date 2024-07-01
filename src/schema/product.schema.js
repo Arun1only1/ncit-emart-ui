@@ -23,7 +23,7 @@ const productSchema = Yup.object({
   description: Yup.string()
     .trim()
     .required()
-    .min(20, "Description must be at least 20 characters.")
+    .min(200, "Description must be at least 200 characters.")
     .max(1000, "Description must be at max 1000 characters."),
   hasFreeShipping: Yup.boolean().default(false),
 });
