@@ -1,29 +1,23 @@
-import { Box, Button, CircularProgress } from "@mui/material";
-import React from "react";
+import { Box, Button, CircularProgress, Stack } from "@mui/material";
+import React, { useState } from "react";
 import Header from "../component/Header";
 import { useNavigate } from "react-router-dom";
 import ProductCard from "../component/ProductCard";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "../lib/axios.instance";
+import FilterProduct from "../component/FilterProduct";
 
-const product1 = {
-  image:
-    "https://media.gettyimages.com/id/622013488/photo/chinese-water-dragon.jpg?s=612x612&w=0&k=20&c=AXYA9calwRrnu3ouzU57Ub5xYaCxFxWDE7zYNsTKKAg=",
-  name: "Macbook M3",
-  brand: "Apple",
-  price: 1500,
-  description: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat
-          asperiores iure animi error iste aspernatur quas? Aperiam culpa id
-          suscipit neque maxime, et, incidunt totam amet nostrum praesentium quo
-          magnam...`,
-};
 const Home = () => {
   const navigate = useNavigate();
 
+  const [category, setCategory] = useState("");
+
   const { isPending, data } = useQuery({
-    queryKey: ["product-list"],
+    queryKey: ["product-list", category],
     queryFn: async () => {
-      return await axiosInstance.get("/product/list");
+      return await axiosInstance.post("/product/list", {
+        category: category || null,
+      });
     },
   });
 
@@ -43,16 +37,33 @@ const Home = () => {
       }}
     >
       <Header />
-      <Button
-        sx={{ marginTop: "7rem" }}
-        variant="contained"
-        color="secondary"
-        onClick={() => {
-          navigate("/add-product");
-        }}
-      >
-        Add Product
-      </Button>
+
+      <Stack spacing={4}>
+        <Button
+          sx={{ marginTop: "7rem" }}
+          variant="contained"
+          color="secondary"
+          onClick={() => {
+            navigate("/add-product");
+          }}
+        >
+          Add Product
+        </Button>
+
+        <FilterProduct setCategory={setCategory} />
+
+        {category && (
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              setCategory(null);
+            }}
+          >
+            clear filter
+          </Button>
+        )}
+      </Stack>
 
       <Box
         sx={{

@@ -10,23 +10,58 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AddProduct from "./pages/AddProduct";
 import EditProduct from "./pages/EditProduct";
 import ProductDetail from "./pages/ProductDetail";
+import ProtectedRoute from "./route-protection/ProtectedRoute";
+import OpenRoute from "./route-protection/OpenRoute";
 
 const router = createBrowserRouter([
-  { path: "/", element: <Home /> },
+  {
+    path: "/",
+    element: (
+      <ProtectedRoute>
+        <Home />
+      </ProtectedRoute>
+    ),
+  },
   {
     path: "/login",
-    element: <Login />,
+    element: (
+      <OpenRoute>
+        <Login />
+      </OpenRoute>
+    ),
   },
   {
     path: "/register",
-    element: <Register />,
+    element: (
+      <OpenRoute>
+        <Register />
+      </OpenRoute>
+    ),
   },
   {
     path: "/add-product",
-    element: <AddProduct />,
+    element: (
+      <ProtectedRoute>
+        <AddProduct />
+      </ProtectedRoute>
+    ),
   },
-  { path: "/product-detail/:id", element: <ProductDetail /> },
-  { path: "/edit-product/:id", element: <EditProduct /> },
+  {
+    path: "/product-detail/:id",
+    element: (
+      <ProtectedRoute>
+        <ProductDetail />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/edit-product/:id",
+    element: (
+      <ProtectedRoute>
+        <EditProduct />
+      </ProtectedRoute>
+    ),
+  },
 ]);
 
 // Create a client
